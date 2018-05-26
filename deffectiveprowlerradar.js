@@ -2,6 +2,7 @@
   /*
     Thanks Bombita for the original prowler radar code
    */
+  const Limit = (top,right,bottom,left) => ({top,right,bottom,left})
   const alliedHemisphere = 'alliedHemisphere'
   const outsideEnemyGateArea = 'outsideEnemyGateArea'
   const outsideEnemyBase = 'outsideEnemyBase'
@@ -11,14 +12,14 @@
     //teams
     1: {
       // top, right, bottom, left
-      [alliedHemisphere]: [-8160, 0, 8160, 16352],
-      [outsideEnemyBase]: [-1698, 8975, -250, 7188],
-      [outsideEnemyGateArea]: [-1698, 8975, 780, 6158]
+      [alliedHemisphere]: Limit(-8160, 0, 8160, 16352),
+      [outsideEnemyBase]: Limit(-1698, 8975, -250, 7188),
+      [outsideEnemyGateArea]: Limit(-1698, 8975, 780, 6158)
     },
     2: {
-      [alliedHemisphere]: [-8160, -16352, 8160, 0],
-      [outsideEnemyBase]: [-2140, -8145, -730, -10086],
-      [outsideEnemyGateArea]: [-2140, -7115, 300, -10086]
+      [alliedHemisphere]: Limit(-8160, -16352, 8160, 0),
+      [outsideEnemyBase]: Limit(-2140, -8145, -730, -10086),
+      [outsideEnemyGateArea]: Limit(-2140, -7115, 300, -10086)
     }
   }
 
@@ -54,7 +55,7 @@
     if (userSettings.flagDefect && isCarryingFlag(team))
       return true
     const limit = limits[team][userSettings.defectType]
-    return y < limit[0] && y > limit[2] && x < limit[1] && x > limit[3]
+    return y < limit.top || y > limit.bottom || x < limit.left || x > limit.right
   }
 
   function DrawCircle(Kt) {
