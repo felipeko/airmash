@@ -68,7 +68,7 @@
         Wt[Kt.id] = Zt,
         game.graphics.layers.groundobjects.addChild(Zt)),
         Zt.position.set(Kt.lowResPos.x, Kt.lowResPos.y),
-        Zt.renderable = !isFailing(kt.lowResPos) && (Kt.removedFromMap || 1 != game.myType && 4 != game.myType || 5 != Kt.type || Kt.team == Players.getMe().team || Kt.hidden || Kt.render && !Kt.stealthed ? !1 : !0)
+        Zt.renderable = !isFailing(Kt.lowResPos) && (Kt.removedFromMap || 1 != game.myType && 4 != game.myType || 5 != Kt.type || Kt.team == Players.getMe().team || Kt.hidden || Kt.render && !Kt.stealthed ? !1 : !0)
     }
   }
 
