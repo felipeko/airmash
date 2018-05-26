@@ -52,9 +52,9 @@
   const isFailing = ({x, y}) => {
     const team = Players.getMe().team
     if (userSettings.flagDefect && isCarryingFlag(team))
-      return false
+      return true
     const limit = limits[team][userSettings.defectType]
-    return y > limit[0] && y < limit[2] && x > limit[1] && x < limit[3]
+    return y < limit[0] && y > limit[2] && x < limit[1] && x > limit[3]
   }
 
   function DrawCircle(Kt) {
