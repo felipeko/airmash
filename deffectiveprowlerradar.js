@@ -8,7 +8,7 @@
   const outsideEnemyBase = 'outsideEnemyBase'
   const disabled = 'disabled'
 
-  const isActive = () => userSettings.defectType === 'disabled'
+  const isActive = () => userSettings.defectType !== 'disabled'
   const isCarryingFlag = (team) => [SWAM.ArrowIndicator.BLUE.tracker.flag.isCarried, SWAM.ArrowIndicator.RED.tracker.flag.isCarried][team]
 
   const limits = {
