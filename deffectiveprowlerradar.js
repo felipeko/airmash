@@ -139,7 +139,7 @@
     id: 'deffectiveProwlerRadar',
     description: 'Perfect is enemy of the good. Featuring a previously perfect prowler radar made by Bombita',
     author: 'Best Korea',
-    version: '0.1',
+    version: '1.0',
     settingsProvider: settingsProvider()
   })
 }()
