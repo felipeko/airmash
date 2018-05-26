@@ -6,8 +6,11 @@
   const alliedHemisphere = 'alliedHemisphere'
   const outsideEnemyGateArea = 'outsideEnemyGateArea'
   const outsideEnemyBase = 'outsideEnemyBase'
+  const disabled = 'disabled'
+
+  const isActive = () => userSettings.defectType === 'disabled'
   const isCarryingFlag = (team) => [SWAM.ArrowIndicator.BLUE.tracker.flag.isCarried, SWAM.ArrowIndicator.RED.tracker.flag.isCarried][team]
-  const activated = true
+
   const limits = {
     //teams
     1: {
@@ -34,17 +37,18 @@
   const settingsProvider = () => {
     const onApply = (settings) => {
       userSettings = settings
-      if (!activated) {
+      if (!isActive()) {
         Yt()
       }
     }
 
     let sp = new SettingsProvider(DEFAULT_SETTINGS, onApply)
     let section = sp.addSection('Deffective Prowler Radar')
-    section.addValuesField('defectType', 'How defective', {
+    section.addValuesField('defectType', '', {
       [alliedHemisphere]: 'Fails on allied hemisphere',
       [outsideEnemyGateArea]: 'Fails outside enemy base and gate area',
-      [outsideEnemyBase]: 'Fails outside enemy base'
+      [outsideEnemyBase]: 'Fails outside enemy base',
+      [disabled]: 'Always fails (Disabled)'
     })
     section.addBoolean('flagDefect', 'Fails when team is carrying enemy flag')
     return sp
@@ -59,7 +63,7 @@
   }
 
   function DrawCircle(Kt) {
-    if (activated) {
+    if (isActive()) {
       let Zt = Wt[Kt.id]
       Zt || (Zt = new PIXI.Graphics,
         Zt.clear(),
@@ -76,7 +80,7 @@
   function Xt() {
     var Kt = Players.getIDs()
       , Zt = Players.getMe()
-    if (!!activated)
+    if (isActive())
       for (var Qt in Kt) {
         var Jt = Players.get(Qt)
         if ((1 == game.myType || 4 == game.myType) && 5 == Jt.type && Jt.team != Zt.team) {
