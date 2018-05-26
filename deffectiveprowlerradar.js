@@ -45,7 +45,7 @@
       [outsideEnemyGateArea]: 'Fails outside enemy base and gate area',
       [outsideEnemyBase]: 'Fails outside enemy base'
     })
-    section.addBooleanField('flagDefect', 'Fails when team is carrying enemy flag')
+    section.addBoolean('flagDefect', 'Fails when team is carrying enemy flag')
     return sp
   }
 
