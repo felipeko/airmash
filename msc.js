@@ -1,7 +1,5 @@
 class Backchannel {
 
-  onlinePlayers = []
-
   constructor(nick, secret, server="wss://nuppet.starma.sh:9595", verbose=true) {
     if (!secret) {
       throw "Secret is required. Like `new Backchannel('twoshot', 'lol-not-that-stupid');`";
@@ -14,6 +12,8 @@ class Backchannel {
     this.server = server;
     this.secret = secret;
     this.verbose = verbose;
+    this.onlinePlayers = []
+    this.handleKeydown = this.handleKeydown.bind(this)
   }
 
   connect() {
@@ -74,6 +74,8 @@ class Backchannel {
         break;
       case "chat":
         UI.addChatLine({id: 0, name: name}, text, 0);
+        if (name === "###")
+          this.lastReplyPlayer = this.onlinePlayers.find(name => text.indexOf(name) === 0) || this.lastReplyPlayer
         break;
     }
     if (this.verbose) console.log(`[${type}] ${name}: ${text}`);
@@ -117,7 +119,40 @@ class Backchannel {
   }
 
   handleKeydown(evt) {
-    console.log(evt,evt.target)
+    if (evt.key !== "Tab") {
+      return;
+    }
+    const value = evt.target.value
+    const tabbableValues = [
+      /^\/\/\s?$/, // "// "
+      /^\/\/\/pm\s?(.*)?/, // "//pm" || "//pm anychar..."
+    ]
+    if (tabbableValues.find(regex => regex.test(value))) {
+      const playerAndMessage = value.replace(/^\/\/(\/pm )?/,"").trim()
+      const canCompletePlayer = this.onlinePlayers.find(name => name.indexOf(playerAndMessage)===0)
+      if (canCompletePlayer) {
+        evt.preventDefault()
+        evt.stopPropagation()
+        this.autoComplete(evt.target,evt.shiftKey)
+      }
+    }
+  }
+
+  autoComplete(el,isShiftPressed) {
+    const onlinePlayers = this.onlinePlayers.sort()
+    if (el.value === "//" || el.value.trim() === "///pm") {
+      el.value = "///pm "+(this.lastReplyPlayer || onlinePlayers[0]) + " "
+    } else {
+      const maybeIncompletePlayer = el.value.replace("///pm ","").trim()
+      const completePlayer = onlinePlayers.find(name => name === maybeIncompletePlayer)
+      if (maybeIncompletePlayer === completePlayer) {
+        const index = onlinePlayers.indexOf(completePlayer)
+        const delta = isShiftPressed ? -1 : 1
+        el.value = "///pm "+onlinePlayers[(index + delta + onlinePlayers.length)%onlinePlayers.length] + " "
+      } else {
+        el.value = "///pm "+ completePlayer + " "
+      }
+    }
   }
 }
 
@@ -158,7 +193,7 @@ var chat;
   }
 
   SWAM.on("gameWipe", () => {
-    document.getElementById("chatinput").removeEventListener("keydown",chat.keydown)
+    chat && document.getElementById("chatinput").removeEventListener("keydown",chat.handleKeydown)
   })
 
   SWAM.on("gamePrep", function(){
