@@ -1,5 +1,7 @@
 class Backchannel {
 
+  onlinePlayers = []
+
   constructor(nick, secret, server="wss://nuppet.starma.sh:9595", verbose=true) {
     if (!secret) {
       throw "Secret is required. Like `new Backchannel('twoshot', 'lol-not-that-stupid');`";
@@ -67,6 +69,8 @@ class Backchannel {
           '<span style="margin: 0 10px; opacity: 0.8;">' +
           UI.escapeHTML(text) +
           '</span></div>');
+        if (name === "###")
+          this.updatePlayerOnMessage(text)
         break;
       case "chat":
         UI.addChatLine({id: 0, name: name}, text, 0);
@@ -86,6 +90,32 @@ class Backchannel {
   mini(msg){ this.send("mini", msg) }
   cmd(msg){ this.send("cmd", msg) }
 
+  updatePlayerOnMessage(message) {
+    const commands = {
+      "who":/^Online: /,
+      "exit": /^Farewell /,
+      "join": /^Welcome /,
+    }
+    if (message.test(commands.who)===0) {
+      this.onlinePlayers = message
+        .replace(commands.who,"").split(",")
+        .map(name => name.trim())
+    } else if (message.test(commands.exit)) {
+      const exitingPlayer = message
+        .replace(commands.exit,"")
+        .replace(/\. \[.*\]$/,"")
+      this.onlinePlayers = this.onlinePlayers.filter(name => name !== exitingPlayer)
+    } else if (message.test(commands.join)) {
+      const joingPlayer = message
+        .replace(commands.join,"")
+        .slice(0,-1)
+      this.onlinePlayers = this.onlinePlayers.concat(joingPlayer)
+    }
+  }
+
+  handleKeydown(evt) {
+    console.log(evt,evt.target)
+  }
 }
 
 var chat;
@@ -124,10 +154,15 @@ var chat;
     return sp;
   }
 
+  SWAM.on("gameWipe", () => {
+    document.getElementById("chatinput").removeEventListener("keydown",chat.keydown)
+  })
+
   SWAM.on("gamePrep", function(){
     if (chat === undefined) {
       chat = new Backchannel("player", settings.secret, settings.server, settings.mscVerbose);
       chat.connect();
+      document.getElementById("chatinput").addEventListener("keydown",chat.handleKeydown)
     }
 
     if (UI.realparseCommand != undefined) { return; }
