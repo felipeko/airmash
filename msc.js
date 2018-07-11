@@ -92,24 +92,27 @@ class Backchannel {
 
   updatePlayerOnMessage(message) {
     const commands = {
-      "who":/^Online: /,
-      "exit": /^Farewell /,
-      "join": /^Welcome /,
+      "who":/^Online: (.*)/,
+      "exit": /^Farewell (.*)\. \[.*]$/,
+      "join": /^Welcome (.*)\./,
     }
-    if (message.test(commands.who)===0) {
-      this.onlinePlayers = message
-        .replace(commands.who,"").split(",")
-        .map(name => name.trim())
-    } else if (message.test(commands.exit)) {
-      const exitingPlayer = message
-        .replace(commands.exit,"")
-        .replace(/\. \[.*\]$/,"")
-      this.onlinePlayers = this.onlinePlayers.filter(name => name !== exitingPlayer)
-    } else if (message.test(commands.join)) {
-      const joingPlayer = message
-        .replace(commands.join,"")
-        .slice(0,-1)
-      this.onlinePlayers = this.onlinePlayers.concat(joingPlayer)
+    switch (true) {
+      case commands.who.test(message):
+        this.onlinePlayers = message
+          .replace(commands.who,"$1").split(",")
+          .map(name => name.trim())
+        break;
+      case commands.join.test(message):
+        const joingPlayer = message
+          .replace(commands.join,"$1")
+        this.onlinePlayers = this.onlinePlayers
+          .filter(name => name!==joingPlayer)
+          .concat(joingPlayer)
+        break;
+      case commands.exit.test(message):
+        const exitingPlayer = message
+          .replace(commands.exit,"$1")
+        this.onlinePlayers = this.onlinePlayers.filter(name => name !== exitingPlayer)
     }
   }
 
