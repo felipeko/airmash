@@ -65,7 +65,7 @@ class Backchannel {
         SWAM.SmallLog.add('<div style="color: #FCF">&#x1F4AC; ' +
           UI.escapeHTML(name) +
           '<span style="margin: 0 10px; opacity: 0.8;">' +
-          UI.escapeHTML(t) +
+          UI.escapeHTML(text) +
           '</span></div>');
         break;
       case "chat":
