@@ -200,8 +200,8 @@ var chat;
     if (chat === undefined) {
       chat = new Backchannel("player", settings.secret, settings.server, settings.mscVerbose);
       chat.connect();
-      document.getElementById("chatinput").addEventListener("keydown",chat.handleKeydown)
     }
+    document.getElementById("chatinput").addEventListener("keydown",chat.handleKeydown);
 
     if (UI.realparseCommand != undefined) { return; }
     UI.realparseCommand = UI.parseCommand;
